@@ -9,64 +9,64 @@ A dynamic, cinematic marketing storytelling web application that transforms NASA
 
 ## 🌌 Project Overview
 
-**Beyond Earth** is not just another dashboard—it's a marketing experience. This single-page application tells a compelling story about humanity's exploration of space through:
+Beyond Earth is not just another dashboard—it's a marketing experience. This single-page application tells a compelling story about humanity's exploration of space through:
 
-- **Cinematic Design**: Scroll-driven animations, parallax effects, and smooth transitions
-- **Real NASA Data**: Live integration with NASA's public APIs
-- **Interactive 3D Elements**: Three.js-powered Earth visualization
-- **User Engagement**: CRUD features for favorites and feedback
-- **Performance Optimized**: MySQL caching for faster load times
+- Cinematic Design: Scroll-driven animations, parallax effects, and smooth transitions
+- Real NASA Data: Live integration with NASA's public APIs
+- Interactive 3D Elements: Three.js-powered Earth visualization
+- User Engagement: CRUD features for favorites and feedback
+- Performance Optimized: MySQL caching for faster load times
 
 ### 🎯 Marketing Narrative
 
-**"Beyond Earth - Journey Through Space"**
+"Beyond Earth - Journey Through Space"
 
 Our campaign takes visitors on an emotional journey:
 
-1. **Hero Section**: Bold statement about humanity's cosmic destiny
-2. **Story Timeline**: Historical narrative of space exploration
-3. **Visual Gallery**: Curated NASA imagery with interactive elements
-4. **Mars Journey**: Exploring the Red Planet through rover eyes
-5. **Earth Perspective**: 3D interactive Earth with the "Overview Effect"
-6. **User Engagement**: Personal connection through favorites and feedback
+1. Hero Section: Bold statement about humanity's cosmic destiny
+2. Story Timeline: Historical narrative of space exploration
+3. Visual Gallery: Curated NASA imagery with interactive elements
+4. Solar system Perspective: 3D interactive solar with the "Overview Effect"
+5. Mars Journey: Exploring the Red Planet through rover eyes
+6. User Engagement: Personal connection through favorites and feedback
 
 ## Next Steps
 
-1. **Start XAMPP MySQL**: Open XAMPP Control Panel and start the MySQL service
+1. Start PostgreSQL: Ensure PostgreSQL service is running
 
-2. **Create the Database**:
+2. Create the Database:
 
-   - Open phpMyAdmin (http://localhost/phpmyadmin)
-   - Create a new database called `beyond_earth`
-   - OR run: `mysql -u root -e "CREATE DATABASE beyond_earth;"`
+   - Open pgAdmin (http://localhost:5050)
+   - Create a new database called beyond_earth
+   - OR run: createdb -U postgres beyond_earth
 
-3. **Update NASA API Key** (Optional for testing):
+3. Update NASA API Key (Optional for testing):
 
    - Get your free API key from https://api.nasa.gov/
-   - Update `.env` file: `NASA_API_KEY=your_actual_key_here`
+   - Update .env file: NASA_API_KEY=your_actual_key_here
    - (DEMO_KEY works but has rate limits)
 
-4. **Run Database Migrations**:
+4. Run Database Migrations:
 
-   ```bash
+   
    php artisan migrate
-   ```
+   
 
-5. **Start the Development Servers**:
+5. Start the Development Servers:
 
-   **Terminal 1 - Laravel Backend**:
+   Terminal 1 - Laravel Backend:
 
-   ```bash
+   
    php artisan serve
-   ```
+   
 
-   **Terminal 2 - Vite Frontend**:
+   Terminal 2 - Vite Frontend:
 
-   ```bash
+   
    npm run dev
-   ```
+   
 
-6. **Access the Application**:
+6. Access the Application:
    - Open your browser to: http://localhost:8000
    - The application will automatically reload when you make changes
 
@@ -76,25 +76,25 @@ Our campaign takes visitors on an emotional journey:
 
 ### Core Functionality
 
-- ✅ **NASA API Integration** - APOD, Mars Rover Photos, EPIC Earth images
-- ✅ **Scroll-Based Storytelling** - Framer Motion animations
-- ✅ **3D Visualization** - Interactive Earth sphere with Three.js
-- ✅ **User Favorites** - Save and manage favorite images (CRUD)
-- ✅ **Feedback System** - Community engagement with ratings (CRUD)
-- ✅ **MySQL Caching** - Optimized API response times
-- ✅ **Responsive Design** - Mobile-first Tailwind CSS
-- ✅ **Cinematic UI** - Glass morphism, gradients, and smooth transitions
+- ✅ NASA API Integration - APOD, Mars Rover Photos, EPIC Earth images
+- ✅ Scroll-Based Storytelling - Framer Motion animations
+- ✅ 3D Visualization - Interactive solar system sphere with Three.js
+- ✅ User Favorites - Save and manage favorite images (CRUD)
+- ✅ Feedback System - Community engagement with ratings (CRUD)
+- ✅ MySQL Caching - Optimized API response times
+- ✅ Responsive Design - Mobile-first Tailwind CSS
+- ✅ Cinematic UI - Glass morphism, gradients, and smooth transitions
 
 ### Technical Stack
 
-**Backend:**
+Backend:
 
 - Laravel 10.x
 - MySQL Database
 - Guzzle HTTP Client
 - API Caching Strategy
 
-**Frontend:**
+Frontend:
 
 - React 18.x
 - Inertia.js (SPA behavior)
@@ -115,85 +115,62 @@ Our campaign takes visitors on an emotional journey:
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repository
 
-```bash
-git clone https://github.com/yourusername/beyond-earth.git
+git clone https://github.com/Madddieeee/Group9_FinalProject.git
 cd beyond-earth
-```
 
-2. **Install PHP dependencies**
+2. Install PHP dependencies
 
-```bash
 composer install
-```
 
-3. **Install Node dependencies**
+3. Install Node dependencies
 
-```bash
 npm install
-```
 
-4. **Environment setup**
+4. Environment setup
 
-```bash
 cp .env.example .env
 php artisan key:generate
-```
 
-5. **Configure your `.env` file**
+5. *Configure your .env file*
 
-```env
-DB_CONNECTION=mysql
+env
+DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=5432
 DB_DATABASE=beyond_earth
-DB_USERNAME=root
+DB_USERNAME=postgres
 DB_PASSWORD=your_password
 
 NASA_API_KEY=your_nasa_api_key_here
 NASA_API_BASE_URL=https://api.nasa.gov
-```
 
-6. **Create database**
+6. Create database
 
-```bash
-mysql -u root -p
-CREATE DATABASE beyond_earth;
-exit;
-```
+creatdb -U postgres beyond_earth
 
-7. **Run migrations**
+7. Run migrations
 
-```bash
 php artisan migrate
-```
 
-8. **Build assets**
+8. Build assets
 
-```bash
 npm run build
-```
 
-9. **Start development servers**
+9. Start development servers
 
 Terminal 1 (Laravel):
 
-```bash
 php artisan serve
-```
 
 Terminal 2 (Vite):
 
-```bash
 npm run dev
-```
 
-10. **Visit the application**
+10. Visit the application
 
-```
 http://localhost:8000
-```
 
 ## 📡 NASA API Integration
 
@@ -201,21 +178,21 @@ This project uses three NASA APIs:
 
 ### 1. Astronomy Picture of the Day (APOD)
 
-- **Endpoint**: `/api/nasa/apod`
-- **Purpose**: Stunning daily space imagery
-- **Usage**: Story timeline and gallery sections
+- Endpoint: /api/nasa/apod
+- Purpose: Stunning daily space imagery
+- Usage: Story timeline and gallery sections
 
 ### 2. Mars Rover Photos
 
-- **Endpoint**: `/api/nasa/mars-photos`
-- **Purpose**: Images from Curiosity rover
-- **Usage**: Mars journey section
+- Endpoint: /api/nasa/mars-photos
+- Purpose: Images from Curiosity rover
+- Usage: Mars journey section
 
 ### 3. EPIC (Earth Polychromatic Imaging Camera)
 
-- **Endpoint**: `/api/nasa/epic`
-- **Purpose**: Full-disc Earth images
-- **Usage**: Interactive Earth section
+- Endpoint: /api/nasa/epic
+- Purpose: Full-disc Earth images
+- Usage: Interactive Earth section
 
 All API responses are cached in MySQL for 1 hour to optimize performance.
 
@@ -223,34 +200,31 @@ All API responses are cached in MySQL for 1 hour to optimize performance.
 
 ### Marketing Approach
 
-This app is designed as a **marketing campaign**, not a data dashboard:
+This app is designed as a marketing campaign, not a data dashboard:
 
-- **Emotional Connection**: Story-driven content that inspires wonder
-- **Visual Impact**: High-quality imagery with cinematic presentation
-- **Progressive Disclosure**: Information revealed through scroll interactions
-- **Call to Action**: Clear pathways for user engagement
-- **Brand Consistency**: Cohesive color scheme and typography
+- Emotional Connection: Story-driven content that inspires wonder
+- Visual Impact: High-quality imagery with cinematic presentation
+- Progressive Disclosure: Information revealed through scroll interactions
+- Call to Action: Clear pathways for user engagement
+- Brand Consistency: Cohesive color scheme and typography
 
 ### Color Palette
 
-```css
 Space Dark: #0a0e27
 Cosmic Purple: #a855f7
 Cosmic Blue: #3b82f6
 Cosmic Pink: #ec4899
 Cosmic Cyan: #06b6d4
-```
 
 ### Typography
 
-- **Display Font**: Space Grotesk (headings)
-- **Body Font**: Inter (content)
+- Display Font: Space Grotesk (headings)
+- Body Font: Inter (content)
 
 ## 💾 Database Schema
 
 ### Favorites Table
 
-```sql
 - id (primary key)
 - session_id (indexed)
 - item_type (string)
@@ -260,11 +234,9 @@ Cosmic Cyan: #06b6d4
 - description (text)
 - metadata (json)
 - timestamps
-```
 
 ### Feedback Table
 
-```sql
 - id (primary key)
 - session_id (indexed)
 - name (string)
@@ -272,15 +244,14 @@ Cosmic Cyan: #06b6d4
 - message (text)
 - rating (integer, 1-5)
 - timestamps
-```
 
 ## 🎬 Animation Highlights
 
-- **Hero Section**: Floating elements, fade-in title
-- **Timeline**: Staggered reveal, side-to-side animations
-- **Gallery**: Hover effects, modal transitions
-- **3D Earth**: Auto-rotate, orbit controls
-- **Scroll Effects**: Parallax backgrounds, opacity changes
+- Hero Section: Floating elements, fade-in title
+- Timeline: Staggered reveal, side-to-side animations
+- Gallery: Hover effects, modal transitions
+- 3D Solar: Auto-rotate, orbit controls
+- Scroll Effects: Parallax backgrounds, opacity changes
 
 ## 📱 Responsive Breakpoints
 
@@ -312,25 +283,18 @@ Cosmic Cyan: #06b6d4
 
 #### Get APOD Images
 
-```http
 GET /api/nasa/apod?count=5
-```
 
 #### Get Mars Photos
 
-```http
 GET /api/nasa/mars-photos?sol=1000
-```
 
 #### Get EPIC Images
 
-```http
 GET /api/nasa/epic
-```
 
 #### Save Favorite
 
-```http
 POST /favorites
 Content-Type: application/json
 
@@ -342,23 +306,17 @@ Content-Type: application/json
   "description": "Description",
   "metadata": "{}"
 }
-```
 
 #### Get Favorites
 
-```http
 GET /favorites
-```
 
 #### Delete Favorite
 
-```http
 DELETE /favorites/{id}
-```
 
 #### Submit Feedback
 
-```http
 POST /feedback
 Content-Type: application/json
 
@@ -368,16 +326,15 @@ Content-Type: application/json
   "message": "Great experience!",
   "rating": 5
 }
-```
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch (git checkout -b feature/AmazingFeature)
+3. Commit your changes (git commit -m 'Add some AmazingFeature')
+4. Push to the branch (git push origin feature/AmazingFeature)
 5. Open a Pull Request
 
 ## 📄 License
@@ -386,25 +343,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **NASA** - For providing free, open APIs and incredible imagery
-- **Laravel Team** - For the amazing PHP framework
-- **React Team** - For the powerful UI library
-- **Inertia.js** - For seamless SPA integration
-- **Framer Motion** - For beautiful animations
-- **Three.js** - For 3D capabilities
+- NASA - For providing free, open APIs and incredible imagery
+- Laravel Team - For the amazing PHP framework
+- React Team - For the powerful UI library
+- Inertia.js - For seamless SPA integration
+- Framer Motion - For beautiful animations
+- Three.js - For 3D capabilities
 
 ## 👨‍💻 Author
 
-Built with ❤️ by [Your Name]
+Built with ❤️ by:
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Name](https://linkedin.com/in/yourname)
-- Portfolio: [yourwebsite.com](https://yourwebsite.com)
+- Technical Lead (Frontend): Jachin Helarion
+- Documentation & Styling Lead: Jon Kevin Cale
+- Technical Lead (Backend): Ronel Melendrez
+- Project Lead/Quality Assurance Lead: Jon Carlo Albarida
 
-## 🌟 Show Your Support
+- GitHub: [hilarionjachin](https://github.com/hilarionjachin)
+- GitHub: [calepawpaw](https://github.com/calepawpaw)
+- GitHub: [Ronelmelendrez](https://github.com/Ronelmelendrez)
+- GitHub: [Madddieeee](https://github.com/Madddieeee)
 
-Give a ⭐️ if this project inspired you!
+## 📄 Report File
 
----
+-Google drive: [Link](https://drive.google.com/drive/folders/1-eRXLMnXFgKMWQsDgvPFrKSZTp_3mLI2?usp=drive_link)
 
-**Beyond Earth** - _Exploring the cosmos, one API call at a time_ 🚀🌌
+Beyond Earth - Exploring the cosmos, one API call at a time 🚀🌌
