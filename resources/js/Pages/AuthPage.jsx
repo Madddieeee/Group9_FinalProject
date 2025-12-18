@@ -1,0 +1,479 @@
+import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaUser, FaLock, FaEnvelope, FaRocket, FaGoogle } from "react-icons/fa";
+import axios from "axios";
+import { Canvas, useFrame } from "@react-three/fiber";
+import {
+  PerspectiveCamera,
+  Float,
+  Sphere,
+  MeshDistortMaterial,
+  Stars as DreiStars,
+  Cloud,
+} from "@react-three/drei";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { gsap } from "gsap";
+import { router } from "@inertiajs/react";
+import * as THREE from "three";
+import { useLoader } from "@react-three/fiber";
+
+// 3D Moon Model Component
+function MoonModel() {
+  const moonRef = useRef();
+  const gltf = useLoader(GLTFLoader, "/models/moon.glb");
+
+  useFrame((state) => {
+    if (moonRef.current) {
+      // Slow rotation
+      moonRef.current.rotation.y += 0.003;
+
+      // Gentle floating motion
+      const time = state.clock.elapsedTime;
+      moonRef.current.position.y = Math.sin(time * 0.5) * 0.3;
+      moonRef.current.position.x = 3 + Math.cos(time * 0.3) * 0.5;
+    }
+  });
+
+  return (
+    <primitive
+      ref={moonRef}
+      object={gltf.scene}
+      scale={1.5}
+      position={[3, 0, -2]}
+    />
+  );
+}
+
+// 3D Spacecraft for Auth Page - Continues journey from LoadingScreen
+function AuthSpacecraft() {
+  const groupRef = useRef();
+
+  useEffect(() => {
+    if (!groupRef.current) return;
+
+    // Enter from far right (continuing from LoadingScreen)
+    gsap.fromTo(
+      groupRef.current.position,
+      { x: 12, y: 0, z: 0 },
+      {
+        duration: 3,
+        x: -12, // Travel across screen to exit left
+        ease: "none", // Constant speed for continuous motion
+      }
+    );
+
+    // Maintain scale from loading screen
+    gsap.fromTo(
+      groupRef.current.scale,
+      { x: 1.8, y: 1.8, z: 1.8 },
+      {
+        duration: 3,
+        x: 2.2,
+        y: 2.2,
+        z: 2.2, // Grow slightly for visibility
+        ease: "power1.inOut",
+      }
+    );
+  }, []);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+
+    // Continuous floating and rotation
+    const time = state.clock.elapsedTime;
+    groupRef.current.position.y = Math.sin(time * 2) * 0.3;
+    groupRef.current.rotation.y += 0.02;
+    groupRef.current.rotation.z = Math.sin(time * 1.5) * 0.1;
+  });
+
+  return (
+    <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
+      <group ref={groupRef} position={[12, 0, 0]} rotation={[0, 0, 0]}>
+        {/* Main Hull */}
+        <mesh castShadow>
+          <coneGeometry args={[0.3, 1.2, 4]} />
+          <meshStandardMaterial
+            color="#6366f1"
+            metalness={0.9}
+            roughness={0.1}
+            emissive="#8b5cf6"
+            emissiveIntensity={0.6}
+          />
+        </mesh>
+
+        {/* Cockpit */}
+        <mesh position={[0, 0.3, 0.2]} castShadow>
+          <sphereGeometry args={[0.15, 16, 16]} />
+          <meshStandardMaterial
+            color="#3b82f6"
+            metalness={0.9}
+            roughness={0.1}
+            transparent
+            opacity={0.8}
+            emissive="#60a5fa"
+            emissiveIntensity={1}
+          />
+        </mesh>
+
+        {/* Wings */}
+        <mesh position={[-0.4, 0, 0]} rotation={[0, 0, Math.PI / 6]} castShadow>
+          <boxGeometry args={[0.6, 0.05, 0.3]} />
+          <meshStandardMaterial
+            color="#4f46e5"
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+        <mesh position={[0.4, 0, 0]} rotation={[0, 0, -Math.PI / 6]} castShadow>
+          <boxGeometry args={[0.6, 0.05, 0.3]} />
+          <meshStandardMaterial
+            color="#4f46e5"
+            metalness={0.8}
+            roughness={0.2}
+          />
+        </mesh>
+
+        {/* Engine Glow */}
+        <pointLight
+          position={[0, -0.6, 0]}
+          color="#ec4899"
+          intensity={3}
+          distance={4}
+        />
+        <mesh position={[0, -0.6, 0]}>
+          <sphereGeometry args={[0.15, 16, 16]} />
+          <meshStandardMaterial
+            color="#ec4899"
+            emissive="#ec4899"
+            emissiveIntensity={2.5}
+            transparent
+            opacity={0.9}
+          />
+        </mesh>
+
+        {/* Exhaust Trail */}
+        {[...Array(10)].map((_, i) => (
+          <mesh key={i} position={[0, -0.8 - i * 0.18, 0]}>
+            <sphereGeometry args={[0.08 - i * 0.007, 8, 8]} />
+            <meshStandardMaterial
+              color="#f97316"
+              emissive="#f97316"
+              emissiveIntensity={2.5 - i * 0.2}
+              transparent
+              opacity={0.9 - i * 0.08}
+            />
+          </mesh>
+        ))}
+      </group>
+    </Float>
+  );
+}
+
+export default function AuthPage({ onAuthSuccess }) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const endpoint = isLogin ? "/login" : "/register";
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : formData;
+
+      const response = await axios.post(endpoint, payload);
+
+      if (response.status === 200 || response.status === 201) {
+        // Store user data in localStorage
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response.data.user || { email: formData.email })
+        );
+        localStorage.setItem("authenticated", "true");
+
+        // Call success callback
+        if (onAuthSuccess) {
+          onAuthSuccess(response.data.user || { email: formData.email });
+        }
+
+        // Redirect to home after successful authentication - use full page reload
+        window.location.href = "/home";
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      setError(
+        err.response?.data?.message ||
+          "Authentication failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "/auth/google";
+  };
+
+  return (
+    <motion.div
+      className="fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-purple-900 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+    >
+      {/* 3D Spacecraft Canvas - Continuous Journey */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
+          <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={60} />
+          <ambientLight intensity={0.3} color="#e0f2fe" />
+          <directionalLight
+            position={[5, 5, 5]}
+            intensity={1}
+            color="#fef3c7"
+            castShadow
+          />
+          <pointLight position={[-5, 0, 0]} color="#8b5cf6" intensity={0.5} />
+          <pointLight position={[5, 0, 0]} color="#06b6d4" intensity={0.5} />
+          <AuthSpacecraft />
+          <MoonModel />
+        </Canvas>
+      </div>
+
+      {/* Animated background stars */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        {[...Array(150)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              opacity: [0.2, 1, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      <motion.div
+        className="relative z-50 min-h-screen flex items-center justify-center p-6 pointer-events-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="w-full max-w-md"
+        >
+          {/* Logo */}
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <FaRocket className="text-6xl text-cosmic-pink mx-auto mb-4" />
+            <h1 className="text-5xl font-display font-bold gradient-text mb-2">
+              Beyond Earth
+            </h1>
+            <p className="text-white/70">Journey Through Space</p>
+          </motion.div>
+
+          {/* Auth Card */}
+          <motion.div
+            className="glass-card p-8"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            {/* Toggle Login/Register */}
+            <div className="flex mb-6 bg-white/5 rounded-lg p-1">
+              <button
+                onClick={() => setIsLogin(true)}
+                className={`flex-1 py-2 rounded-md transition-all ${
+                  isLogin
+                    ? "bg-gradient-to-r from-cosmic-purple to-cosmic-pink text-white"
+                    : "text-white/50 hover:text-white"
+                }`}
+              >
+                Login
+              </button>
+              <button
+                onClick={() => setIsLogin(false)}
+                className={`flex-1 py-2 rounded-md transition-all ${
+                  !isLogin
+                    ? "bg-gradient-to-r from-cosmic-purple to-cosmic-pink text-white"
+                    : "text-white/50 hover:text-white"
+                }`}
+              >
+                Register
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <AnimatePresence mode="wait">
+                {!isLogin && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <div className="relative">
+                      <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required={!isLogin}
+                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-cosmic-purple transition-all"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="relative">
+                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-cosmic-purple transition-all"
+                />
+              </div>
+
+              <div className="relative">
+                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-cosmic-purple transition-all"
+                />
+              </div>
+
+              <AnimatePresence mode="wait">
+                {!isLogin && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <div className="relative">
+                      <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                      <input
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Confirm Password"
+                        value={formData.password_confirmation}
+                        onChange={handleInputChange}
+                        required={!isLogin}
+                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-cosmic-purple transition-all"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-sm"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 bg-gradient-to-r from-cosmic-purple to-cosmic-pink text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-cosmic-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading
+                  ? "Processing..."
+                  : isLogin
+                  ? "Launch Mission"
+                  : "Join Expedition"}
+              </motion.button>
+            </form>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-transparent text-white/50">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            {/* Google Sign In Button */}
+            <motion.button
+              type="button"
+              onClick={handleGoogleLogin}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-3 px-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-3"
+            >
+              <FaGoogle className="text-xl" />
+              <span>Sign in with Google</span>
+            </motion.button>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-center mt-6 text-white/50 text-sm"
+          >
+            Embark on your cosmic journey
+          </motion.p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
